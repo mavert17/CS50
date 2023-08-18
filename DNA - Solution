@@ -1,0 +1,104 @@
+import csv
+import sys
+
+def main():
+
+    # TODO: Check for command-line usage
+    try:
+        with open(sys.argv[1], newline='') as csvfile:
+            database = csv.DictReader(csvfile)
+            tabella = []
+            for row in database:
+                tabella.append(row)
+    except FileNotFoundError:
+        print("File not found")
+    except len(sys.argv) != 3:
+        print("Usage: python dna.py data.csv sequence.txt")
+
+    # TODO: Read database file into a variable
+
+    # TODO: Read DNA sequence file into a variable
+    try:
+        with open(sys.argv[2], 'r') as testo:
+            testo = testo.read()
+    except FileNotFoundError:
+        print("File not found")
+    # TODO: Find longest match of each STR in DNA sequence
+
+    agatc = 'AGATC'
+    aatg = 'AATG'
+    tatc = 'TATC'
+    ttttttct = 'TTTTTTCT'
+    tctag = 'TCTAG'
+    gata = 'GATA'
+    gaaa = 'GAAA'
+    tctg = 'TCTG'
+
+    n_agatc = longest_match(testo, agatc)
+    n_aatg = longest_match(testo, aatg)
+    n_tatc = longest_match(testo, tatc)
+    n_ttttttct = longest_match(testo, ttttttct)
+    n_tctag = longest_match(testo, tctag)
+    n_gata = longest_match(testo, gata)
+    n_gaaa = longest_match(testo, gaaa)
+    n_tctg = longest_match(testo, tctg)
+
+    # TODO: Check database for matching profiles
+    non_presenti = 0
+    for dizionari in tabella:
+        # Make loop for small file
+        if len(dizionari) == 4:
+            if n_agatc == int(dizionari['AGATC']) and n_aatg == int(dizionari['AATG']) and n_tatc == int(dizionari['TATC']):
+                print(dizionari['name'])
+            elif str(n_agatc) and str(n_aatg) and str(n_tatc) not in tabella:
+                non_presenti +=1
+        # Make loop for large file
+        elif len(dizionari) == 9:
+            if n_agatc == int(dizionari['AGATC']) and n_ttttttct == int(dizionari['TTTTTTCT']) and n_aatg == int(dizionari['AATG']) and n_tctag == int(dizionari['TCTAG']) and n_gata == int(dizionari['GATA']) and n_tatc == int(dizionari['TATC']) and n_gaaa == int(dizionari['GAAA']) and n_tctg == int(dizionari['TCTG']):
+                print(dizionari['name'])
+            elif str(n_agatc) and str(n_ttttttct) and str(n_aatg) and str(n_tctag) and str(n_gata) and str(n_tatc) and str(n_gaaa) and str(n_tctg) not in tabella:
+                non_presenti +=1
+    if non_presenti == len(tabella):
+        print("No match")
+    return
+
+
+def longest_match(sequence, subsequence):
+    """Returns length of longest run of subsequence in sequence."""
+
+    # Initialize variables
+    longest_run = 0
+    subsequence_length = len(subsequence)
+    sequence_length = len(sequence)
+
+    # Check each character in sequence for most consecutive runs of subsequence
+    for i in range(sequence_length):
+
+        # Initialize count of consecutive runs
+        count = 0
+
+        # Check for a subsequence match in a "substring" (a subset of characters) within sequence
+        # If a match, move substring to next potential match in sequence
+        # Continue moving substring and checking for matches until out of consecutive matches
+        while True:
+
+            # Adjust substring start and end
+            start = i + count * subsequence_length
+            end = start + subsequence_length
+
+            # If there is a match in the substring
+            if sequence[start:end] == subsequence:
+                count += 1
+
+            # If there is no match in the substring
+            else:
+                break
+
+        # Update most consecutive matches found
+        longest_run = max(longest_run, count)
+
+    # After checking for runs at each character in seqeuence, return longest run found
+    return longest_run
+
+
+main()
